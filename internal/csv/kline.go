@@ -21,6 +21,8 @@ type Kline struct {
 
 func NewKline(row []string) *Kline {
 
+	log.Info().Interface("row", row).Msg("")
+
 	convTime, err := strconv.ParseInt(row[0], 10, 64)
 	if err != nil {
 		panic(err)
@@ -80,5 +82,8 @@ func (k *Kline) Log() {
 		Float64("h", k.High).
 		Float64("l", k.Low).
 		Float64("c", k.Close).
+		Float64("vb", k.VolumeBase).
+		Float64("vq", k.VolumeQuote).
+		Int64("n", k.NbTrade).
 		Msg("")
 }
