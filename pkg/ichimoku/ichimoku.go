@@ -3,7 +3,7 @@ package capsis_ta_ichimoku
 import (
 	"errors"
 	"fmt"
-	capsis_indicator_utils "github.com/capsian/capsis-ta-lib-go/internal/utils"
+	capsis_indicator_utils "github.com/capsis-finance/capsis-ta-lib-go/internal/utils"
 	"time"
 )
 

@@ -6,3 +6,6 @@ bin/*
 # config
 .config*
 .secret*
+
+# venv
+.venv

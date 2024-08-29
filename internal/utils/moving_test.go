@@ -2,7 +2,7 @@ package capsis_ta_utils_test
 
 import (
 	"fmt"
-	capsis_ta_utils "github.com/capsian/capsis-ta-lib-go/internal/utils"
+	capsis_ta_utils "github.com/capsis-finance/capsis-ta-lib-go/internal/utils"
 	"testing"
 )
 
