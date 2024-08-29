@@ -21,8 +21,6 @@ type Kline struct {
 
 func NewKline(row []string) *Kline {
 
-	log.Info().Interface("row", row).Msg("")
-
 	convTime, err := strconv.ParseInt(row[0], 10, 64)
 	if err != nil {
 		panic(err)
