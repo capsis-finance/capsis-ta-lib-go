@@ -9,3 +9,6 @@ bin/*
 
 # venv
 .venv
+
+# test
+test_data/run_*
