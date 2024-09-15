@@ -16,7 +16,7 @@ install_venv: requirements.txt
 # Script
 
 get_test_data_ETHUSDT_1m:
-	$(PY_CMD) script/test_data.py -s "ETHUSDT" -i "1m" -l 100 -e
+	$(PY_CMD) script/test_data.py -s "ETHUSDT" -i "1m" -l 80 -e
 
 # Test
 

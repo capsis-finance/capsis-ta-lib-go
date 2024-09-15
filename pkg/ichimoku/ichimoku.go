@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	capsis_indicator_utils "github.com/capsis-finance/capsis-ta-lib-go/internal/utils"
+	"github.com/rs/zerolog/log"
 	"time"
 )
 
@@ -27,13 +28,12 @@ type Ichimoku struct {
 	intervalMs int64
 }
 
-func NewIchimoku(tenkanPeriod, kijunPeriod, spanAPeriod, spanBPeriod, chikoPeriod, spanAProjectPeriod, spanBProjectPeriod int, intervalMs int64) *Ichimoku {
+func NewIchimoku(tenkanPeriod, kijunPeriod, spanBPeriod, chikoPeriod, spanAProjectPeriod, spanBProjectPeriod int, intervalMs int64) *Ichimoku {
 	var res Ichimoku
 
 	res.cfg = IchimokuConfig{
 		TenkanPeriod:       tenkanPeriod,
 		KijunPeriod:        kijunPeriod,
-		SpanAPeriod:        spanAPeriod,
 		SpanBPeriod:        spanBPeriod,
 		ChikoPeriod:        chikoPeriod,
 		SpanAProjectPeriod: spanAProjectPeriod,
@@ -126,6 +126,27 @@ func (i *Ichimoku) compute() error {
 	// Chiko
 	i.Chiko = i.computeChiko()
 
+	// log
+	log.Debug().
+		Int("ts", len(i.TsIndex)).
+		Int("t", len(i.Tenkan)).
+		Int("k", len(i.Kijun)).
+		Int("a", len(i.SpanA)).
+		Int("b", len(i.SpanB)).
+		Int("c", len(i.Chiko)).
+		Msg("")
+	for j, tsIdx := range i.TsIndex {
+		log.Debug().
+			Int("j", j).
+			Str("ts", time.UnixMilli(tsIdx).Format("15:04:05")).
+			Float64("t", i.Tenkan[j]).
+			Float64("k", i.Kijun[j]).
+			Float64("a", i.SpanA[j]).
+			Float64("b", i.SpanB[j]).
+			Float64("c", i.Chiko[j]).
+			Msg("")
+	}
+
 	return nil
 }
 
@@ -217,4 +238,68 @@ func (i *Ichimoku) computeChiko() []float64 {
 	chiko = capsis_indicator_utils.ShiftLeft(i.cfg.ChikoPeriod, i.pastValues.pastClose, -1)
 
 	return chiko
+}
+
+func (i *Ichimoku) GetKijun() float64 {
+	if len(i.Kijun) == i.cfg.initPeriod {
+		return i.Kijun[len(i.Kijun)-1]
+	} else {
+		return -1
+	}
+}
+func (i *Ichimoku) GetTenkan() float64 {
+	if len(i.Tenkan) == i.cfg.initPeriod {
+		return i.Tenkan[len(i.Tenkan)-1]
+	} else {
+		return -1
+	}
+}
+func (i *Ichimoku) GetSpanA() float64 {
+	if len(i.SpanA) == i.cfg.initPeriod {
+		return i.SpanA[len(i.SpanA)-i.cfg.SpanAProjectPeriod-1]
+	} else {
+		return -1
+	}
+}
+func (i *Ichimoku) GetSpanB() float64 {
+	if len(i.SpanB) == i.cfg.initPeriod {
+		return i.SpanB[len(i.SpanB)-i.cfg.SpanBProjectPeriod-1]
+	} else {
+		return -1
+	}
+}
+func (i *Ichimoku) GetChiko() float64 {
+	if len(i.Chiko) == i.cfg.initPeriod {
+		return i.Chiko[len(i.Chiko)-i.cfg.ChikoPeriod-1]
+	} else {
+		return -1
+	}
+}
+
+func (i *Ichimoku) Log() {
+	log.Info().
+		// prop
+		Int64("intervalMs", i.intervalMs).
+		Int64("lastTsMs", i.lastTsMs).
+		Str("lastTsMsStr", time.UnixMilli(i.lastTsMs).Format("2006-01-02 15:04:05")).
+		// cfg
+		// Interface("cfg", i.cfg).
+		// past values
+		Int("len.T", len(i.Tenkan)).
+		// result
+		Msg("")
+}
+
+func (i *Ichimoku) LogResult() {
+	log.Info().
+		// prop
+		Str("lastTsMsStr", time.UnixMilli(i.lastTsMs).Format("15:04:05")).
+		// results
+		Float64("t", i.GetTenkan()).
+		Float64("k", i.GetKijun()).
+		Float64("a", i.GetSpanA()).
+		Float64("b", i.GetSpanB()).
+		Float64("c", i.GetChiko()).
+		// result
+		Msg("")
 }
